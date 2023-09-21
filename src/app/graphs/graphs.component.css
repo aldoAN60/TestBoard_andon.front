@@ -1,0 +1,34 @@
+.conteiner-success{
+    width: 219px;
+    height: 53px;
+    background: radial-gradient(84.91% 84.91% at 50.23% 30.19%, #01B101 0%, #007100 100%);
+    padding: 3%;
+}
+.conteiner-success-text{
+    color: #DBFFCC;
+    text-align: center;
+    font-family: Inter;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    
+
+}
+.conteiner-fail{
+    width: 219px;
+    height: 53px;
+    background: radial-gradient(84.91% 84.91% at 50.23% 30.19%, #B14001 0%, #710000 100%);
+    padding: 3%;
+}
+.conteiner-fail-text{
+    color: #FFBB7A;
+    text-align: center;
+    font-family: Inter;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    
+}
+

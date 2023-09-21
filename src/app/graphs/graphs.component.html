@@ -1,0 +1,50 @@
+<div>
+    <p class="text-4xl font-bold ms-2">ESTADO: <span>[state]</span></p>
+</div>
+<section class="grid sm:grid-cols-1  lg:grid-cols-5  mt-5">
+    <div  class="w-full col-span-2" >
+        <canvas
+        baseChart
+        [type]="'bar'"
+        [legend]="true"
+        [datasets]="chartData"
+        [labels]="chartLabels"
+        [options]="chartOptions"
+        
+        >
+        
+        </canvas>
+    </div>
+    <div class="w-full flex flex-col items-center justify-evenly">
+        <div>
+            <p class=" text-md font-bold text-center" >CUMPLIMINETO</p>
+            <div class="conteiner-success">
+                <p class="conteiner-success-text" >107%</p>
+            </div>
+        </div>
+        <div>
+            <p class=" text-md font-bold text-center">SCRAP PROCESO</p> 
+            <div class="conteiner-fail">
+                <p class="conteiner-fail-text">33%</p>
+            </div>
+        </div>
+    </div>
+    <div class="w-full col-span-2" >
+        <canvas
+        baseChart
+        [type]="'line'"
+        [legend]="true"
+        [datasets]="chartData"
+        [labels]="chartLabels"
+        [options]="chartOptions"
+        
+        >
+        
+        </canvas>
+    </div>
+</section>
+
+<div class="text-center lg:text-4xl sm:text-2xl">
+    <p class=" font-bold ">ACCION: <br>
+    <span class=" font-bold text-red-600">[ACTION]</span></p>
+</div>
