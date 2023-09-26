@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GraphsComponent } from './graphs/graphs.component';
 import { NgChartsModule } from 'ng2-charts';
+import { ExcelComponent } from './excel/excel.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    GraphsComponent
+    GraphsComponent,
+    ExcelComponent
   ],
   imports: [
     BrowserModule,
