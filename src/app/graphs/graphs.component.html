@@ -3,21 +3,12 @@
 </div>
 <section class="grid sm:grid-cols-1  lg:grid-cols-5  mt-5">
     <div  class="w-full col-span-2" >
-        <canvas
-        baseChart
-        [type]="'bar'"
-        [legend]="true"
-        [datasets]="chartData"
-        [labels]="chartLabels"
-        [options]="chartOptions"
-        
-        >
-        
-        </canvas>
+        <p class="text-center text-2xl">SCRAP EN TURNO</p>
+        <canvas #scrapTurno></canvas>
     </div>
     <div class="w-full flex flex-col items-center justify-evenly">
         <div>
-            <p class=" text-md font-bold text-center" >CUMPLIMINETO</p>
+            <p class=" text-md font-bold text-center" >CUMPLIMIENTO</p>
             <div class="conteiner-success">
                 <p class="conteiner-success-text" >107%</p>
             </div>
@@ -30,17 +21,8 @@
         </div>
     </div>
     <div class="w-full col-span-2" >
-        <canvas
-        baseChart
-        [type]="'line'"
-        [legend]="true"
-        [datasets]="chartData"
-        [labels]="chartLabels"
-        [options]="chartOptions"
-        
-        >
-        
-        </canvas>
+        <p class="text-center text-2xl">TOP OFENSOR</p>
+        <canvas #topOfensor></canvas>
     </div>
 </section>
 

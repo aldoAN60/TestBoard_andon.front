@@ -28,7 +28,9 @@
               "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
+            ]
             
           },
           "configurations": {
