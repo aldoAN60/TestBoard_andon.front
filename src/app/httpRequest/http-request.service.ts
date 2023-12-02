@@ -10,7 +10,7 @@ export class HttpRequestService {
   
   constructor(private http: HttpClient) { }
   getRegistry(): Observable<any[]> {
-    const url = this.baseUrl + 'get-scrap-report/';
+    const url = this.baseUrl + 'get-compliance-report/';
     return this.http.get<any[]>(url);
   }
 
@@ -21,6 +21,10 @@ export class HttpRequestService {
 
   html_data_extraction(): Observable<any[]>{
     const url = this.baseUrl + 'html-data-extraction/';
+    return this.http.get<any[]>(url);
+  }
+  get_hourly_compliace_report(): Observable<any[]>{
+    const url = this.baseUrl + 'get-hourly-compliance-report/';
     return this.http.get<any[]>(url);
   }
 }

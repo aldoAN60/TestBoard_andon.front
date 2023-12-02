@@ -3,6 +3,7 @@ import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { HttpRequestService } from '../httpRequest/http-request.service';
 import { map } from 'rxjs';
+import { formatNumber } from '@angular/common';
 @Component({
   selector: 'app-graphs',
   templateUrl: './graphs.component.html',
@@ -44,14 +45,166 @@ htmlData:any;
     }
 
   ];
+  HourlyCompliance:any= [];
+  desiredGoal:any = [ // rateXhour can be change as required
+    {
+      'hour':0,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':1,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':2,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':3,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':4,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':5,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':6,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':7,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':8,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':9,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':10,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':11,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':12,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':13,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':14,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':15,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':16,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':17,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':18,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':19,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':20,
+      'rateXhour':350,
+      
+    },
+    {
+      'hour':21,
+      'rateXhour':350,
+      
+    },
+        {
+      'hour':22,
+      'rateXhour':350,
+      
+    },
+    
+    {
+      'hour':23,
+      'rateXhour':350,
+      
+    },
+    {'daylyGoal':8400 // this value can be change as required
+    },
+  ];
+  desiredRateXHour:number = 0;
+  RealRateHour:string = '';
+
+  currentPercentage:number = 0;
+
   constructor(private http:HttpRequestService){}
 
   ngAfterViewInit() {
     this.setCharTopOfensor( this.TOGraphFooterLabels, this.objValues, );
     this.setCharScrap(this.Scraplabels, this.Scraplabel ,this.Scrapdata);
-    this.startScheduledUpdates();
-    //this.updateAndonInfo();
+    //this.startScheduledUpdates();
+    this.updateAndonInfo();
+
   }
+
+  set_compliance(){
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    const getCurrentHourlyCompliance = this.HourlyCompliance[currentHour-1] === undefined ? this.HourlyCompliance[currentHour-2] : this.HourlyCompliance[currentHour-1];
+    
+    this.desiredRateXHour = this.desiredGoal[currentHour].hour;
+    this.RealRateHour = getCurrentHourlyCompliance.quantity_per_hour;
+
+    const currentSumRate = getCurrentHourlyCompliance.total_quantity;
+    
+    const dailyGoal = this.desiredGoal[this.desiredGoal.length -1].daylyGoal;
+
+    const getPercentage = (currentSumRate / dailyGoal) * 100;
+    this.RealRateHour = getPercentage.toFixed(2);
+    console.log(this.RealRateHour);
+    
+  }
+
 
   startScheduledUpdates() {
     // Obtén la hora actual
@@ -82,17 +235,31 @@ htmlData:any;
     }, timeUntilNextUpdate);
   }
   
-  
-  
-  
-  
-  
+  get_hourly_compliance_report(): Promise<void>{
+    console.log('procesando reporte...');
+    return new Promise<void>((resolve, reject) =>{
+      this.http.get_hourly_compliace_report().subscribe({
+        next:res =>{
+          console.log(res);
+          this.HourlyCompliance = res;
+          console.log('reporte procesado por exitosamente');
+          resolve();
+        },
+        error:error => {
+          console.error('falla en procesar el reporte',error);
+          reject();
+        }
+      });
+    });
+  }
 
   async updateAndonInfo(){
     try {
       await this.conf_outlook_download();
       await this.data_db_insertion();
-      await this.set_graph_Info_registry();
+      await this.get_hourly_compliance_report();
+      this.set_compliance();
+     // await this.set_graph_Info_registry();
     } catch (error) {
       console.error('error en updateAndonInfo', error);
     }
@@ -102,7 +269,7 @@ conf_outlook_download():Promise<void>{
   return new Promise<void>((resolve, reject) =>{
     this.http.dowload_outlook_attached().subscribe({
       next:res => {
-       console.log('archivo HTML descargado correctamente');
+        console.log('archivo HTML descargado correctamente');
         resolve();
       },
       error: error =>{
