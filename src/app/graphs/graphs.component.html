@@ -1,5 +1,19 @@
-<div>
-    <p class="text-4xl font-bold ms-2">ESTADO: <span>[state]</span></p>
+<div class="grid grid-cols-3">
+    <div class="col-span-2 flex items-center">
+        <p class="text-4xl font-bold ms-2">ESTADO: <span>[state]</span></p>
+    </div>
+    <div class="grid grid-cols-2">
+        <div>
+            <p class="text-lg flex flex-col items-center">cumplimiento diario: <span class="text-green-500 font-semibold text-4xl">{{dailyGoal}}</span></p>
+            <p class="text-lg flex flex-col items-center">cumplimiento diario actual: <span class="{{setCurrentDailyRateColor}} font-semibold text-4xl">{{currentDayliGoal}}</span></p>    
+        
+        </div>
+        <div>
+            <p class="text-lg flex flex-col items-center">cumplimiento por hora: <span class="text-green-500 font-semibold text-4xl"> {{desiredRateXHour}}</span></p>
+            <p class="text-lg flex flex-col items-center">cumplimiento actual: <span class="{{setCurrentHourlyRateColor}} font-semibold text-4xl">{{ RealRateHour}}</span></p>    
+        </div>
+    </div>
+
 </div>
 <section class="grid sm:grid-cols-1  lg:grid-cols-5  mt-5">
     <div  class="w-full col-span-2" >
@@ -9,13 +23,13 @@
     <div class="w-full flex flex-col items-center justify-evenly">
         <div>
             <p class=" text-md font-bold text-center" >CUMPLIMIENTO</p>
-            <div class="conteiner-success">
-                <p class="conteiner-success-text" >{{RealRateHour}}%</p>
+            <div class="bg-gradient-to-r from-green-500 to-green-700 w-52 h-12 p-1">
+                <p class="conteiner-success-text" >{{percentageRate}}%</p>
             </div>
         </div>
         <div>
             <p class=" text-md font-bold text-center">SCRAP PROCESO</p> 
-            <div class="conteiner-fail">
+            <div class="bg-gradient-to-r from-red-700 to-red-800 w-52 h-12 p-1">
                 <p class="conteiner-fail-text">33%</p>
             </div>
         </div>
