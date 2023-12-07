@@ -309,97 +309,124 @@ setCurrentHourlyRateColor:string = '';
 
   constructor(private http:HttpRequestService){}
 
-  /**
-   * Método del ciclo de vida llamado después de que la vista del componente se ha inicializado completamente.
-   * @remarks
-   * Este método se utiliza para realizar acciones que deben llevarse a cabo después de que
-   * la vista y sus componentes secundarios se hayan inicializado.
-   */
-  ngAfterViewInit() {
-    // Configurar gráficos y realizar actualizaciones iniciales después de que la vista se ha inicializado
-    this.setCharTopOfensor(this.TOGraphFooterLabels, this.objValues);
-    this.setCharScrap(this.Scraplabels, this.Scraplabel, this.Scrapdata);
-    
-    // Iniciar actualizaciones programadas y realizar una actualización inicial de la información
-    this.startScheduledUpdates();
-    this.updateAndonInfo();
-  }
-
-  set_compliance(){
-    const now = new Date();
-    const currentHour = now.getHours();
-
-    const getCurrentHourlyCompliance = this.HourlyCompliance[currentHour] === undefined ? this.HourlyCompliance[currentHour-1] : this.HourlyCompliance[currentHour];
-    
-    this.desiredRateXHour = this.desiredGoal[currentHour].rateXhour;
-    this.RealRateHour = getCurrentHourlyCompliance.quantity_per_hour;
-
-    this.currentDayliGoal = getCurrentHourlyCompliance.total_quantity;
-    
-    this.dailyGoal = this.desiredGoal[this.desiredGoal.length -1].daylyGoal;
-
-    const getPercentage = (this.currentDayliGoal / this.dailyGoal) * 100;
-    this.setCurrentDailyRateColor = getPercentage < 50 ? 'text-red-500': getPercentage < 80 ? 'text-yellow-500' : 'text-green-500';
-    
-    this.setCurrentHourlyRateColor = this.gettingPercentageXHourly(this.desiredRateXHour, this.RealRateHour);
-    this.percentageRate = getPercentage.toFixed(2);
-    
-  }
-  gettingPercentageXHourly(desiredRateXHour:number, realRateHour:number):string{
-   const get50percentage = (desiredRateXHour * 50)/100;
-   const get80percentage = (desiredRateXHour * 80)/100;
-
-    if(realRateHour < get50percentage){
-      return 'text-red-500'
-    }else if(realRateHour < get80percentage){
-      return 'text-yellow-500'
-    }else{
-      return 'text-green-500'
-    }
-
-  }
-
-  startScheduledUpdates() {
-    // Obtén la hora actual
-    const now = new Date();
-    const currentMinutes = now.getMinutes();
-    const currentSeconds = now.getSeconds();
+/**
+ * Método del ciclo de vida llamado después de que la vista del componente se ha inicializado completamente.
+ * @remarks
+ * Este método se utiliza para realizar acciones que deben llevarse a cabo después de que
+ * la vista y sus componentes secundarios se hayan inicializado.
+ */
+ngAfterViewInit(): void {
+  // Configurar gráficos y realizar actualizaciones iniciales después de que la vista se ha inicializado
+  this.setCharTopOfensor(this.TOGraphFooterLabels, this.objValues);
+  this.setCharScrap(this.Scraplabels, this.Scraplabel, this.Scrapdata);
   
-    // Calcula los minutos restantes hasta el próximo intervalo de 10 minutos
-    const minutesUntilNextUpdate = (11 - (currentMinutes % 10)) % 10;
-    console.log(minutesUntilNextUpdate);
-    // Calcula los segundos restantes hasta el próximo intervalo
-    const secondsUntilNextUpdate = 60 - currentSeconds;
-    console.log(secondsUntilNextUpdate);
-    // Calcula el tiempo hasta el próximo intervalo (en milisegundos)
-    const timeUntilNextUpdate = (minutesUntilNextUpdate * 60 + secondsUntilNextUpdate) * 1000;
-    console.log(timeUntilNextUpdate);
-  
-    // Programa la primera actualización después del tiempo calculado
-    setTimeout(() => {
-      // Ejecuta la actualización inicial
-      this.updateAndonInfo();
-  
-      // Programa actualizaciones cada 10 minutos a partir de ahora
-      setInterval(() => {
-        this.updateAndonInfo();
-      }, 10 * 60 * 1000);
-  
-    }, timeUntilNextUpdate);
-  }
+  // Iniciar actualizaciones programadas y realizar una actualización inicial de la información
+  this.startScheduledUpdates();
+  this.updateAndonInfo();
+}
 
-  async updateAndonInfo(){
-    try {
-      await this.conf_outlook_download();
-      await this.data_db_insertion();
-      await this.get_hourly_compliance_report();
-      //await this.set_graph_Info_registry(); solo descomentar en caso de que se tenga que hacer uso de la funcion
-      this.set_compliance();
-      
+/**
+ * Actualiza la información relacionada con el sistema Andon.
+ * @remarks
+ * Este método realiza varias operaciones, incluida la descarga de archivos de Outlook, la inserción de datos en la base de datos,
+ * la obtención de informes de cumplimiento por hora y la actualización de gráficos y métricas.
+ * En caso de errores, se registra un mensaje de error en la consola.
+ */
+async updateAndonInfo(): Promise<void> {
+  try {
+    await this.conf_outlook_download();
+    await this.data_db_insertion();
+    await this.get_hourly_compliance_report();
+    //await this.set_graph_Info_registry(); // Descomentar solo si es necesario utilizar la función
+    this.set_compliance();
   } catch (error) {
-      console.error('error en updateAndonInfo', error);
-    }
+    console.error('Error en updateAndonInfo', error);
   }
+}
+
+
+/**
+ * Establece la tasa de cumplimiento actual, la tasa real por hora y los objetivos diarios.
+ * Calcula el progreso diario, colorea la tasa diaria actual y la tasa por hora en función del rendimiento.
+ */
+set_compliance(): void {
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  // Obtén la información de cumplimiento por hora actual o la última hora disponible
+  const getCurrentHourlyCompliance = this.HourlyCompliance[currentHour] === undefined ?
+    this.HourlyCompliance[currentHour - 1] : this.HourlyCompliance[currentHour];
+
+  // Establece las variables de tasa deseada por hora, tasa real por hora, objetivo diario actual y objetivo diario total
+  this.desiredRateXHour = this.desiredGoal[currentHour].rateXhour;
+  this.RealRateHour = getCurrentHourlyCompliance.quantity_per_hour;
+  this.currentDayliGoal = getCurrentHourlyCompliance.total_quantity;
+  this.dailyGoal = this.desiredGoal[this.desiredGoal.length - 1].daylyGoal;
+
+  // Calcula el porcentaje de cumplimiento diario y establece el color correspondiente
+  const getPercentage = (this.currentDayliGoal / this.dailyGoal) * 100;
+  this.setCurrentDailyRateColor = getPercentage < 50 ? 'text-red-500' : getPercentage < 80 ? 'text-yellow-500' : 'text-green-500';
+
+  // Establece el color de la tasa por hora actual en función del rendimiento
+  this.setCurrentHourlyRateColor = this.gettingPercentageXHourly(this.desiredRateXHour, this.RealRateHour);
+  this.percentageRate = getPercentage.toFixed(2);
+}
+
+/**
+ * Calcula y devuelve el color correspondiente para la tasa por hora actual según el rendimiento.
+ * @param desiredRateXHour - La tasa deseada por hora.
+ * @param realRateHour - La tasa real por hora.
+ * @returns Un string que representa el color CSS correspondiente.
+ */
+gettingPercentageXHourly(desiredRateXHour: number, realRateHour: number): string {
+  const get50percentage = (desiredRateXHour * 50) / 100;
+  const get80percentage = (desiredRateXHour * 80) / 100;
+
+  if (realRateHour < get50percentage) {
+    return 'text-red-500';
+  } else if (realRateHour < get80percentage) {
+    return 'text-yellow-500';
+  } else {
+    return 'text-green-500';
+  }
+}
+
+
+/**
+ * Inicia actualizaciones programadas para la información de Andon.
+ * La función calcula el tiempo hasta el próximo intervalo de 10 minutos,
+ * programa la primera actualización después de este tiempo y establece
+ * actualizaciones automáticas cada 10 minutos a partir de entonces.
+ */
+startScheduledUpdates(): void {
+  // Obtén la hora actual
+  const now = new Date();
+  const currentMinutes = now.getMinutes();
+  const currentSeconds = now.getSeconds();
+
+  // Calcula los minutos restantes hasta el próximo intervalo de 10 minutos
+  const minutesUntilNextUpdate = (11 - (currentMinutes % 10)) % 10;
+
+  // Calcula los segundos restantes hasta el próximo intervalo
+  const secondsUntilNextUpdate = 60 - currentSeconds;
+
+  // Calcula el tiempo hasta el próximo intervalo (en milisegundos)
+  const timeUntilNextUpdate = (minutesUntilNextUpdate * 60 + secondsUntilNextUpdate) * 1000;
+
+  // Programa la primera actualización después del tiempo calculado
+  setTimeout(() => {
+    // Ejecuta la actualización inicial
+    this.updateAndonInfo();
+
+    // Programa actualizaciones cada 10 minutos a partir de ahora
+    setInterval(() => {
+      this.updateAndonInfo();
+    }, 10 * 60 * 1000);
+
+  }, timeUntilNextUpdate);
+}
+
+
 /**
  * Descarga archivos adjuntos desde Outlook a través de una solicitud HTTP.
  * @returns Una promesa que se resuelve si la descarga es exitosa, o se rechaza si hay un error.
@@ -418,6 +445,7 @@ conf_outlook_download():Promise<void>{
     });
   });
 }
+
 /**
  * Extrae datos HTML y los inserta en la base de datos a través de una solicitud HTTP.
  * @returns Una promesa que se resuelve si la operación es exitosa, o se rechaza si hay un error.
